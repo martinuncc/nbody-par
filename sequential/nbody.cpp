@@ -151,15 +151,17 @@ void update_position(simulation& s, size_t i, double dt) {
   s.z[i] += s.vz[i]*dt;
 }
 
-void dump_state(simulation& s) {
-  std::cout<<s.nbpart<<'\t';
-  for (size_t i=0; i<s.nbpart; ++i) {
-    std::cout<<s.mass[i]<<'\t';
-    std::cout<<s.x[i]<<'\t'<<s.y[i]<<'\t'<<s.z[i]<<'\t';
-    std::cout<<s.vx[i]<<'\t'<<s.vy[i]<<'\t'<<s.vz[i]<<'\t';
-    std::cout<<s.fx[i]<<'\t'<<s.fy[i]<<'\t'<<s.fz[i]<<'\t';
-  }
-  std::cout<<'\n';
+void dump_state(simulation& s,std::ostream &logFile) {
+  logFile << s.nbpart << '\t';
+
+    for (size_t i = 0; i < s.nbpart; ++i)
+    {   
+        logFile << s.mass[i] << '\t';
+        logFile << s.x[i] << '\t' << s.y[i] << '\t' << s.z[i] << '\t';
+        logFile << s.vx[i] << '\t' << s.vy[i] << '\t' << s.vz[i] << '\t';
+        logFile << s.fx[i] << '\t' << s.fy[i] << '\t' << s.fz[i] << '\t';
+    }
+    logFile << '\n';
 }
 
 void load_from_file(simulation& s, std::string filename) {
@@ -187,6 +189,11 @@ int main(int argc, char* argv[]) {
       <<"a filename (load from file in singleline tsv)"<<"\n";
     return -1;
   }
+  std::ofstream logFile("log.tsv");
+    if (!logFile.is_open()) {
+        std::cerr << "Failed to open log file." << std::endl;
+        return -1;
+    }
   
   double dt = std::atof(argv[2]); //in seconds
   size_t nbstep = std::atol(argv[3]);
@@ -214,7 +221,7 @@ int main(int argc, char* argv[]) {
   
   for (size_t step = 0; step< nbstep; step++) {
     if (step %printevery == 0)
-      dump_state(s);
+      dump_state(s, logFile);
   
     reset_force(s);
     for (size_t i=0; i<s.nbpart; ++i)
