@@ -296,6 +296,7 @@ int main(int argc, char *argv[])
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
     std::cout << "Simulation took " << duration.count() << " microseconds." << std::endl;
+    logFile << "duration\t" << duration.count() << " microseconds\n";
 
     // dump_state(s);
 
